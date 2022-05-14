@@ -3,20 +3,20 @@
 
 ### Struktury danych
 Stan gry będzie reprezentowany przez graf rzadki, gdzie kreski rysowane przez graczy są reprezentowane przez krawędzie grafu sąsiadujących wierzchołków. Algorytm aktualizacji będzie trawersował graf gdzie krawędzie są ogranicze przez kreski graczy.
-![[Pasted image 20220514104854.png]]
+![](img1.png)
 (Biały - system koordynatów krawędzi graczy, żółty - system koordynatów trawersowania algorytmu)
 
 Algorytm wykorzystwany do detekcji stanów będzie wykorzystywał dwa algorytmy A* puszczane jednocześnie po dwóch stronach krawędzi narysowanej przez gracza
-![[Pasted image 20220514104942.png]]
+![](img2.png)
 (Niebieski/czerwony - ruchy graczy, biały x - ostatni ruch, czerwone kropki - starty algorytmów A*)
 
 Celem A* jest dojście do drugiego startu. Jeśli algorytmy się spotkają (mają wspólną przestrzeń odwiedzeń), to wiemy, że figura jest otwarta:
-![[Pasted image 20220514105801.png]]
+![](img3.png)
 (niebieski/czerwony - ruchy graczy, zielony/żółty x - ostatni ruch, zielony/żółty - ruchy A*, różowy X - spotkanie algorytmów)
 
 W przypadku gdy trawersy się nie spotkają, a jeden z nich obejdzie wszystkie pola wiemy, że figura jest zamknięta.
 
-![[Pasted image 20220514105919.png]]
+![](img4.png)
 (niebieski/czerwony - ruchy graczy, zielony/zółty - trawersy algorytmów)
 
 W tym momencie obszar jest zaznaczony przez algorytm który pierwszy zakończył
