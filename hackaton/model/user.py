@@ -1,10 +1,15 @@
-from pydantic import BaseModel
-from fastapi import WebSocket
 from typing import Optional
+
+from pydantic import BaseModel
 
 
 class User(BaseModel):
+    id: Optional[int]
     name: str
-    websocket: WebSocket
     is_host: Optional[bool]
+
+
+
+
+print(User.schema())
 
