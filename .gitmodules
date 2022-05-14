@@ -1,0 +1,3 @@
+[submodule "Frondaga"]
+	path = Frondaga
+	url = git@github.com:kpekala/Frondaga.git
