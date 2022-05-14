@@ -1,4 +1,12 @@
+from .model.player import Player
 
 
 class RoomExecutor:
-    pass
+    def __init__(self):
+        self.players: List[Player] = []
+
+    def add_player(self, player):
+        self.players.append(player)
+
+
+
