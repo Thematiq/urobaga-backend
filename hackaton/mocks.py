@@ -10,7 +10,7 @@ class MockGameExecutor:
 
     async def run(self) -> None:
         while True:
-            pass
+            break
 
     async def await_for_end(self) -> None:
         await self.task.wait()
