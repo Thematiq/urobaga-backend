@@ -10,10 +10,8 @@ async def get_name_and_room_token(
         _websocket: WebSocket,
         session: Optional[str] = Cookie(None),
         token: Optional[str] = Query(None),
-        name: str = Query(None)) -> Tuple[str, Optional[str]]:
-    if session is None and token is None:
-        return None
-    return (name, session or token)
+        name: str = Query(None)) -> Dict[str, Optional[str]]:
+    return {"name": name, "token": session or token if session or token else None}
 
 
 async def get_match() -> Dict[str, MockMatchExecutor]:
