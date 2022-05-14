@@ -10,6 +10,3 @@ class User(BaseModel):
 
 
 
-
-print(User.schema())
-
