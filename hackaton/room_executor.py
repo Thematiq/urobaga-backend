@@ -18,7 +18,7 @@ class GameExecutor:
     async def run(self):
         print("Game run")
 
-    async def await_for_match(self):
+    async def await_for_end(self):
         print("Game awaiting for match")
 
 class RoomExecutor:
@@ -47,7 +47,7 @@ class RoomExecutor:
                 self.host.ready_to_play = True
                 for player in self.players:
                     await player.websocket.send_json(Starting(name=player.name, starting=True).dict())
-                while not self.is_everyone_ready():
+                while not self.is_everyone_ready(): # do zmiany: jak sprawdzać czy wszyscy juz dołączyli? jak potem z tego włączyć grę?
                     continue
                 break
             elif json.get('height'):
