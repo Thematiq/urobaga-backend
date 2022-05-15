@@ -13,6 +13,7 @@ from ..quiz import GameQuiz
 # Todo id for move
 class GameExecutor:
     def __init__(self, players: List[Player], rules: GameRules, quiz: GameQuiz):
+        self.task = asyncio.Event()
         self.quiz = quiz
         self.players = players
         self.players_order = PlayerOrder(players)
@@ -28,7 +29,7 @@ class GameExecutor:
         self.game_is_running = True
 
     async def run(self):
-        self.send_initial_state()
+        await self.send_initial_state()
 
         while self.game_is_running:
             move = await self.handle_receive_move(self.rules.move_timeout)
@@ -54,6 +55,7 @@ class GameExecutor:
                 # timeout
                 self.players_order.next_player()
                 self.broadcast_move(move)
+        self.task.set()
 
     # async def handle_questions(self, questions: List[QuizQuestion]) -> Optional[int]:
     #     answers = map(lambda x: x.correct_answer , questions)
@@ -77,6 +79,7 @@ class GameExecutor:
 
     async def receive_move(self) -> Optional[JsonMove]:
         try:
+            print(self.players_order.get_current_player_id())
             msg = BaseMessage.parse_obj(
                 await self.players[self.players_order.get_current_player_id()].websocket.receive_json())
 
@@ -121,6 +124,7 @@ class GameExecutor:
 
     async def broadcast_move(self, move, field: List[Point] = []):
         # Todo bez await
+        print("move")
         await asyncio.wait([
             player.websocket.send_json(
                 ReplyModel(
@@ -141,6 +145,9 @@ class GameExecutor:
             current_player=self.players_order.get_current_player_id())
         return player_order
 
+    async def await_for_end(self):
+        await self.task.wait()
+
 
 class PlayerOrder:
     def __init__(self, players):
@@ -151,6 +158,7 @@ class PlayerOrder:
         self.id = 0
         players_order = list(range(len(players)))
         random.shuffle(players_order)
+        print(f"shiffle: players_order")
         return players_order
 
     def get_players_order(self):
@@ -161,3 +169,4 @@ class PlayerOrder:
 
     def next_player(self):
         self.id += 1
+

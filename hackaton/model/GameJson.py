@@ -118,6 +118,7 @@ Room
 class Token(BaseMessage, type=MessageType.Token):
     type: MessageType = MessageType.Token
     token: str
+    user_id: int
 
 
 class User(BaseModel):

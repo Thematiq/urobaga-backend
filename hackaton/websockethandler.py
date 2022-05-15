@@ -40,13 +40,13 @@ async def create_match(
         quiz: GameQuiz):
     print('create new match')
     try:
-        match = RoomExecutor(quiz)
         unique_token = uuid.uuid4().hex[:6].upper()
         while db.get(unique_token):
             unique_token = uuid.uuid4().hex[:6].upper()
 
+        match = RoomExecutor(quiz, unique_token)
+
         db[unique_token] = match
-        await websocket.send_json(Token(token=unique_token).dict())
         game = await match.run(websocket, name)
         if game is None:
             return

@@ -3,12 +3,13 @@ from asyncio import Event
 from typing import List, Optional
 
 from .model.GameExecutor import GameExecutor
-from .model.GameJson import Player, GameRules, MessageType, PlayerList, User, Quit, Start
+from .model.GameJson import Player, GameRules, MessageType, PlayerList, User, Quit, Start, Token
 from .quiz import GameQuiz
 
 
 class RoomExecutor:
-    def __init__(self, quiz: GameQuiz):
+    def __init__(self, quiz: GameQuiz, token):
+        self.token = token
         self.quiz = quiz
         self.host = None
         self.players: List[Player] = []
@@ -24,6 +25,7 @@ class RoomExecutor:
         self.next_player_id += 1
         self.players_in_lobby += 1
         self.players.append(self.host)
+        await self.host.websocket.send_json(Token(token=self.token, user_id=self.host.id).dict())
         await self.send_player_list()
         await self.host.websocket.send_json(self.rules.dict())
         while True:
@@ -64,6 +66,7 @@ class RoomExecutor:
         self.players_in_lobby += 1
         player.listening_task = asyncio.create_task(self.listen_websocket(player))
         self.players.append(player)
+        await player.websocket.send_json(Token(token=self.token, user_id=player.id).dict())
         await self.send_player_list()
         await player.websocket.send_json(self.rules.dict())
         return player
