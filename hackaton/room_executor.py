@@ -37,20 +37,19 @@ class RoomExecutor:
         self.players.append(self.host)
         while True:
             json: dict = await self.host.websocket.receive_json()
-            if json.get("type"):
-                if json.get("type")==MessageType.Quit:
-                    print("host quits")
-                    for player in self.players:
-                        await player.websocket.send_json(Message(type=MessageType.Quit, message="quit").dict())
-                    await self.host.websocket.close()
-                    return None
-                elif json.get("type")==MessageType.Start:
-                    print("host starting")
-                    self.players_in_lobby -= 1
-                    for player in self.players:
-                        await player.websocket.send_json(Message(type=MessageType.Start, message="start").dict())
-                    break
-            elif json.get('height'):
+            if json.get("type")==MessageType.Quit:
+                print("host quits")
+                for player in self.players:
+                    await player.websocket.send_json(Message(type=MessageType.Quit, message="quit").dict())
+                await self.host.websocket.close()
+                return None
+            elif json.get("type")==MessageType.Start:
+                print("host starting")
+                self.players_in_lobby -= 1
+                for player in self.players:
+                    await player.websocket.send_json(Message(type=MessageType.Start, message="start").dict())
+                break
+            elif json.get('type')==MessageType.Rules:
                 print("host rules")
                 try:
                     self.rules = GameRules.parse_obj(json)

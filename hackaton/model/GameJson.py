@@ -7,11 +7,51 @@ from fastapi import WebSocket
 from typing import Optional, List
 
 
+from pydantic import BaseModel
+from enum import Enum
+from typing import Dict, List
+
+
+
 class MessageType(Enum):
+    Token = "TOKEN"
+    Rules = "RULES"
+    Player_list = "PLAYER_LIST"
     Start = "START"
     Error = "ERROR"
     Join = "JOIN"
     Quit = "QUIT"
+
+
+class BaseMessage(BaseModel):
+    type: MessageType
+
+    _subtypes_ = dict()
+
+    def __init_subclass__(cls, type=None):
+        cls._subtypes_[type or cls.__name__.lower()] = cls
+
+    @classmethod
+    def parse_obj(cls, obj):
+        return cls._convert_to_real_type_(obj)
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls._convert_to_real_type_
+
+    @classmethod
+    def _convert_to_real_type_(cls, data):
+        data_type = MessageType(data.get("type"))
+        if data_type is None:
+            raise ValueError('Missing `type` field!!')
+
+        sub = cls._subtypes_.get(data_type)
+
+        if sub is None:
+            return cls(**data)
+        return sub(**data)
+
+
 
 
 """
@@ -70,8 +110,12 @@ Room
 """
 
 
-class Token(BaseModel):
+class Token(BaseMessage, type=MessageType.Token):
     token: str
+
+
+class PlayerList(BaseMessage, type=MessageType.Player_list):
+    players: List[User]
 
 
 class User(BaseModel):
@@ -89,7 +133,7 @@ class Player:
     listening_task: Optional[asyncio.Task]
 
 
-class GameRules(BaseModel):
+class GameRules(BaseMessage, type=MessageType.Rules):
     height: int = 10
     width: int = 5
     move_timeout: float = 30.0
