@@ -61,9 +61,25 @@ Client
 """
 
 
-class JsonPoint(BaseModel):
+class Point(BaseModel):
     x: int
     y: int
+    
+    def __hash__(self):
+        return hash((self.x, self.y))
+    
+    def __eq__(self, other):
+        if not isinstance(other, Point):
+            return False
+        return self.x == other.x and self.y == other.y
+        
+    def __ne__(self, other):
+        return not (self == other)
+      
+    def __lt__(self, other):
+        if not isinstance(other, Point):
+            raise TypeError
+        return self.x < other.x or (self.x == other.x and self.y < other.y)
 
 
 """
@@ -82,7 +98,7 @@ class Question(BaseModel):
 
 
 class Field(BaseModel):
-    point: List[JsonPoint]
+    point: List[Point]
 
 
 class Message(BaseModel):
@@ -136,12 +152,13 @@ class QuizRequest(BaseMessage, type=MessageType.Quiz):
     questions: List[JsonQuizQuestion]
 
 
-class Move(BaseMessage, type=MessageType.Move):
-    start_point: JsonPoint
-    end_point: JsonPoint
+class JsonMove(BaseMessage, type=MessageType.Move):
+    start_point: Point
+    end_point: Point
+    user: Optional[int]
 
 
 class ReplyModel(BaseModel):
-    move: Optional[Move]  # Move is empty if there will be timeout
+    move: Optional[JsonMove]  # Move is empty if there will be timeout
     players_order: PlayersOrder
     field: Optional[Field]

@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import Optional, List
 from enum import Enum, auto
 
+from ..model.GameJson import Point
+
 
 class Marker(Enum):
     Left = auto()
@@ -12,28 +14,6 @@ class Marker(Enum):
 class Direction(Enum):
     Horizontal = auto()
     Vertical = auto()
-
-
-@dataclass
-class Point:
-    x: int
-    y: int
-
-    def __hash__(self):
-        return hash((self.x, self.y))
-
-    def __eq__(self, other):
-        if not isinstance(other, Point):
-            return False
-        return self.x == other.x and self.y == other.y
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def __lt__(self, other):
-        if not isinstance(other, Point):
-            raise TypeError
-        return self.x < other.x or (self.x == other.x and self.y < other.y)
 
 
 class Map:

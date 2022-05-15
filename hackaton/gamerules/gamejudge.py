@@ -17,7 +17,7 @@ class GameRuleException(Exception):
 
 
 class GameJudge:
-    def __init__(self, size: Tuple[int], closed_borders: bool = True):
+    def __init__(self, size: Tuple[int, int], closed_borders: bool = True):
         # for now let's assert that's always truth
         assert closed_borders
         board = [[[] for _y in range(size[1])] for _x in range(size[0])]
@@ -37,7 +37,7 @@ class GameJudge:
 
     def apply_move(self, player: int) -> List[Point]:
         if self.last_area is None:
-            raise GameRuleException(ErrorEnum.INTERNAL_SOLVER_ERROR)
+            return []
         for point in self.last_area:
             self.owned_fields[point] = player
         area = self.last_area

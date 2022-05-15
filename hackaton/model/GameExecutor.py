@@ -1,25 +1,24 @@
-import json
-import multiprocessing
-import random
 import asyncio
-import datetime
+import random
+from typing import List, Optional
 
 from pydantic import ValidationError
 
-from .GameJson import PlayersOrder, Move, Message, ReplyModel, MessageType
-from .player import Player
-from .gamejudge import ErrorEnum
-from typing import List
+from .GameJson import PlayersOrder, JsonMove, Message, ReplyModel, MessageType, Player, GameRules, BaseMessage, Point
+from .quiz_question import QuizQuestion
+from ..gamerules.gamejudge import GameJudge, GameRuleException
+from ..quiz import GameQuiz
 
 
 # Todo id for move
 class GameExecutor:
-    def __init__(self, players: List[Player], rules):
+    def __init__(self, players: List[Player], rules: GameRules, quiz: GameQuiz):
+        self.quiz = quiz
         self.players = players
         self.players_order = PlayerOrder(players)
         self.rules = rules
         self.game_is_running = False
-        self.gameJudge = GameJudge(rules.size)
+        self.gameJudge = GameJudge((rules.width, rules.height))
 
     def send_initial_state(self):
         await asyncio.wait([
@@ -32,77 +31,70 @@ class GameExecutor:
         self.send_initial_state()
 
         while self.game_is_running:
-            asyncio.run(self.handle_inactive_users(self.rules.move_timeout))
-            move = asyncio.run(self.handle_receive_move(self.rules.move_timeout))
+            move = await self.handle_receive_move(self.rules.move_timeout)
             if move:
                 # handle move
                 try:
-                    questions = self.handle_move()
-                except ErrorEnum.EDGE_ALREADY_TAKEN:
-                    self.send_error("EDGE_ALREADY_TAKEN")
+                    questions = self.handle_move(move)
+                except GameRuleException as e:
+                    self.send_error(e.cause)
                     continue
-                except ErrorEnum.EDGE_INSIDE_AREA:
-                    self.send_error("EDGE_INSIDE_AREA")
-                    continue
-                except ErrorEnum.INTERNAL_SOLVER_ERROR:
-                    self.send_error("INTERNAL_SOLVER_ERROR")
-                    continue
+
+                if questions:
+                    # TODO handle questions
+                    pass
 
                 # wait for questions answeres
+                field = self.confirm_move()
 
-                field = confirm_move()
-
+                move.user = self.players_order.get_current_player_id()
                 self.players_order.next_player()
                 self.broadcast_move(move, field)
             else:
                 # timeout
                 self.players_order.next_player()
-                self.broadcast_move(move, no_move=True)
+                self.broadcast_move(move)
 
-    def confirm_move(self):
+    # async def handle_questions(self, questions: List[QuizQuestion]) -> Optional[int]:
+    #     answers = map(lambda x: x.correct_answer , questions)
+    #     json_question = map()
+
+    def confirm_move(self) -> List[Point]:
         player_id = -1
         # if questions correct then player else: id = -1
         move_field = self.gameJudge.apply_move(self.players_order.get_current_player_id())
         return move_field
 
-    def handle_move(self):
-        questions = None
-        move_result_points = self.gameJudge.move(move.start)
+    def handle_move(self, move: JsonMove) -> Optional[List[QuizQuestion]]:
+        move_result_points = self.gameJudge.move(move.start_point, move.end_point)
         if move_result_points:
-            # Todo handle questions ...
-            pass
-
-        return questions
+            return self.quiz.get_questions(move_result_points)
+        return None
 
     def send_error(self, message):
         error: Message = Message(message=message, type=MessageType.Error).dict()
-        await self.players[self.player_id_with_move].websocket.send_json(error)
+        await self.players[self.players_order.get_current_player_id()].websocket.send_json(error)
 
-    async def receive_move(self):
+    async def receive_move(self) -> Optional[JsonMove]:
         try:
-            # TODO NEW GameJson
-            json: dict = await player.websocket.receive_json()
-            if json.get("message"):
-                self.handle_message_type(Message(json), self.players_order.get_current_player_id())  # check if not quit
-            elif json.get("start_point") or json.get("start_point"):
-                move = Move(await self.players[self.players_order.get_current_player_id()].websocket.receive_json())
+            msg = BaseMessage.parse_obj(
+                await self.players[self.players_order.get_current_player_id()].websocket.receive_json())
+
+            if msg.type is MessageType.Quit:
+                self.remove_player(self.players_order.get_current_player_id())
+            elif msg.type is MessageType.Move:
+                return msg
             else:
                 raise "Current player message error"
 
         except ValidationError as e:
             raise "JSON current player move error. " + str(e)
-        return move
 
-    async def handle_receive_move(self, timeout):
+    async def handle_receive_move(self, timeout) -> Optional[JsonMove]:
         try:
-            move = await asyncio.wait_for(self.receive_move(), timeout=timeout)
+            return await asyncio.wait_for(self.receive_move(), timeout=timeout)
         except asyncio.TimeoutError:
-            move = False  # timeout
-        return move
-
-    def handle_message_type(self, message: Message, player_id):
-        if message.type == MessageType.Quit:
-            self.remove_player(player_id)
+            return None
 
     def remove_player(self, player_id):
         # Todo
@@ -119,6 +111,7 @@ class GameExecutor:
             raise "JSON player exit error." + str(e)
 
     async def handle_inactive_users(self, timeout):
+
         try:
             for player in self.players:
                 if player.id != self.players_order.get_current_player_id():
@@ -126,7 +119,7 @@ class GameExecutor:
         except asyncio.TimeoutError:
             pass  # timeout
 
-    def broadcast_move(self, move, field=None, questions=None, no_move=False):
+    def broadcast_move(self, move, field: List[Point] = []):
         # Todo bez await
         await asyncio.wait([
             player.websocket.send_json(
@@ -134,8 +127,6 @@ class GameExecutor:
                     move=move,
                     player_order=self.get_players_order(player.id),
                     field=field,
-                    questions=questions if player.id == self.players_order.get_current_player_id() else None,
-                    no_move=no_move
                 ).dict())
             for player in self.players
         ])
@@ -164,7 +155,7 @@ class PlayerOrder:
     def get_players_order(self):
         return self.players_order_list
 
-    def get_current_player_id(self):
+    def get_current_player_id(self) -> int:
         return self.players_order_list[self.id]
 
     def next_player(self):

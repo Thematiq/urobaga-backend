@@ -6,21 +6,13 @@ from fastapi import WebSocket
 from typing import Dict, List, Optional
 
 from .model.GameJson import User
-
-
-class GameExecutor:
-    def __init__(self, players):
-        self.players = players
-
-    async def run(self):
-        print("Game run")
-
-    async def await_for_end(self):
-        print("Game awaiting for match")
+from .quiz import GameQuiz
+from .model.GameExecutor import GameExecutor
 
 
 class RoomExecutor:
-    def __init__(self):
+    def __init__(self, quiz: GameQuiz):
+        self.quiz = quiz
         self.host = None
         self.players: List[Player] = []
         self.task = Event()
@@ -108,7 +100,7 @@ class RoomExecutor:
         for player in self.players:
             if player.listening_task is not None:
                 player.listening_task.cancel()
-        self.game = GameExecutor(self.players)
+        self.game = GameExecutor(self.players, self.rules, )
         self.task.set()
         return self.game
 
