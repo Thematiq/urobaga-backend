@@ -1,0 +1,39 @@
+question,difficulty,answer_0,answer_1,answer_2,answer_3
+Kto stworzył gita?,1,Linus Torvalds,Eric Raymond,Guido van Rossum,Marek Gajęcki
+Który z języków programowania nie wykorzystuje JVM?,1,Assembler,Scala,Kotlin,Java
+Oryginalna implementacja GitHuba powstała w języku...,3,Ruby,Python,C,Java
+Git jest napisany w języku...,1,C,Fortran,Assembly,Python
+Najpopularniejszy standard liczb zmiennoprzecinkowych to...,3,IEEE 754,802.11,RFC 2616,IEEE 802.3
+Który z paradygmatów programowania jest najmniej wykorzystywany w języku Scala?,3,Programowanie logiczne,Programowanie obiektowe,Programowanie funkcyjne,Programowanie proceduralne
+Który z fizycznych nośników jest dopuszczony przez protokół IP?,3,Gołąb pocztowy,Osiołek,Listonosz,Wielbłąd
+Który z algorytmów grafowych wykorzystuje rekurencję jako podstawę swojego działania,3,Depth First Search,Breath First Search,Algorytm Dijkstry,Algorytm Floyda-Warshalla
+Która ze struktur jest znana z najszybszej gwarantowanej złożoności obliczeniowej operacji dodawania oraz usuwania elementów z jej początku?,3,Stos,Lista jednokierunkowa,Kopiec,Kolejka
+Które z narzędzi służy do konteneryzacji?,3,Docker,VirtualBox,QEMU,Parallels
+"Do jakies wartości zewaluuje się poniższy kod w C?\n#define POW(x) ((x) * (x))\nint i = 3;\nprintf(""%d"", POW(i++));",5,12,9,16,błąd kompilacji
+Jaką architekturę wykorzystują procesory Apple M1?,3,ARM,RISC-V,AMD64,AVR 8-bit
+Jak nazywa się wariant protokołu TLS przystosowany do użycia z UDP?,5,DTLS,UTLS,UDP-TLS,ULS
+Jakie zalety ma wykorzystywanie protokołu UDP do przesyłania danych nad protokołem TCP?,3,Szybkość przesyłania danych jest znacznie szybsza,Retransmisja danych w przypadku problemów z przesłaniem informacji,Ustanowienie połączenia przed przesyłaniem danych,Gwarancja dotarcia informacji wysłanej do odbiorcy
+Z którą warstwą w modelu OSI/ISO kojarzone są routery?,5,Warstwa sieciowa,Warstwa fizyczna,Warstwa transportowa,Warstwa łącza danych
+Jaki język programowania jest najbardziej wykorzystywany do tworzenia aplikacji internetowych z podanych? ,1,JavaScript,Java,C++,Python
+"Przeprowadzając ciąg takich samych instrukcji odpowiednio dostosowanych do danego języka, który z nich wykona je najszybciej?",1,C,Python,Scala,Kotlin
+Jaką precyzję bitową liczb zmiennoprzecinkowych oferuje Python?,1,64b,16b,8b,32b
+Który z podanych algorytmów sortowania jest algorytmem niestabilnym?,5,QuickSort,Merge sort,Bucket sort,Bubble sort
+Który z podanych formatów plików jest najbardziej zbliżony strukturą do słownika w Pythonie?,5,JSON,TXT,XML,CSV
+"Jakiego modyfikatora dostępu należy użyć na polu klasy, aby mogło być widoczne jedynie wewnątrz tej klasy?",1,Private,Public,Protected,Żaden
+Który z protokół routingu nie wykorzystuje metody dystans-wektor do wyliczania wartości metryki?,5,RIP,OSPF,IGRP,Żaden z nich
+Origynalna implementacja Pythona powstała w ... ?,1,C,C++,Assembler,Fortran
+Jaką główną zaletę posiadają tablice Numpy w porównaniu z tablicami oferowanymi przez Python?,3,Znaczne przyspieszenie prędkości operacji,Redukcja wymaganej pamięci,Wymuszenie jednego typu danych dla każdego elementu w tablicy,-
+Która z domen ulega podziałowi przez switcha należącego do warstwy łącza danych?,3,Domena rozgłoszeniowa,Domena kolizijna,Obie,-
+Dlaczego występują błędy zaokrągleń w wyliczaniu wartości?,3,"Limitacja pamięciowa, która może spowodować przekłamanie wartości bitów",Ograniczony czas na wyliczenie wartości,Generalnie zła implementacja,-
+Który z podanych algorytmów sortowania wykona najwięcej porównań wartości niezależnie od podanego wejścia?,3,Bubble Sort,Quick Sort,Merge Sort,Selection Sort
+Który z podanych wzorców projektowych jest wzorcem strukturalnym?,3,Bridge,Prototype,Iterator,Observer
+Czego nie może zawierać interfejs w Javie?,3,Pól,Implementacji,Klas statycznych,Komentarzy
+Jaki wzorzec projektowy najlepiej zastosować w celu utworzenia różnych sposobów na przejście po danej kolekcji?,5,Iterator,Visitor,State,Memento
+"Jakiej sekcji NIE ma w kole naukowym ""BIT""?",1,BIT AI,BIT JAVA,BIT MATHS,BIT JAVA SCRIPT
+"Jaką złożoność obliczeniową ma algorytm Dijkstry, zakładając że implementujemy go używając zwykłej kolejki (E - liczba krawędzi, V - liczba wierzchołków)",3,O(V^2*log(E)),O(V^2),O(V*log(E)),O(log(E)^2)
+który z tych protokołów zapobiega powtaniu pętli w sieci (w warstwie 2)?,1,UDP,Ethernet,ARP,STP
+który z tych protokołów nie działa na protokole IPv6?,1,TCP,ARP,ICMP,UDP
+którego z kierunków NIE MA na WIEiT'cie?,1,Nowoczesne Technologie w Kryminalistyce,Elektronika,Data Science,Cyberbezpieczeństwo i Telekomunikacja
+Zjawisko zagłodzenia w programie współbieżnym jest,3,"stanem, w którym każdy proces oczekuje na działanie innego procesu",przejawem braku bezpieczeństwa programu współbieżnego,"stanem, w którym proces czekający na dane zdarzenie nie zostaje wznowiony mimo, że występuje ono dowolną liczbę razy","Poprawnym stanem programu, nie wpływającym na szybkość wykonywanego procesu"
+co oznacza kod 500 w odpowiedzi protokołu HTTP?,1,"OK, dane w porządku",bad gateway,server not found,server internal error
+Jaki jest kod odpowiedzi protokołu HTTP dla bad gateway error?,1,203,500,502,413
