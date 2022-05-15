@@ -21,6 +21,8 @@ class MessageType(Enum):
     Error = "ERROR"
     Join = "JOIN"
     Quit = "QUIT"
+    Quiz = "QUIZ"
+    Move = "MOVE"
 
 
 class BaseMessage(BaseModel):
@@ -64,12 +66,6 @@ class Point(BaseModel):
     y: int
 
 
-class Move(BaseModel):
-    start_point: Point
-    end_point: Point
-    # user: int
-
-
 """
 Server
 """
@@ -101,10 +97,6 @@ class Message(BaseModel):
     type: MessageType
     message: str
 
-
-print(Move.schema_json(indent=2))
-
-
 """
 Room
 """
@@ -114,14 +106,14 @@ class Token(BaseMessage, type=MessageType.Token):
     token: str
 
 
-class PlayerList(BaseMessage, type=MessageType.Player_list):
-    players: List[User]
-
-
 class User(BaseModel):
     id: int
     name: str
     is_host: bool
+
+
+class PlayerList(BaseMessage, type=MessageType.Player_list):
+    players: List[User]
 
 
 @dataclass
@@ -134,7 +126,24 @@ class Player:
 
 
 class GameRules(BaseMessage, type=MessageType.Rules):
+    type: MessageType = MessageType.Rules
     height: int = 10
     width: int = 5
     move_timeout: float = 30.0
+    question_timeout: float = 10.0
 
+
+class JsonQuizQuestion(BaseModel):
+    question: str
+    difficulty: int
+    answers: List[str]
+
+
+class QuizRequest(BaseMessage, type=MessageType.Quiz):
+    type: MessageType = MessageType.Quiz
+    questions: List[JsonQuizQuestion]
+
+
+class Move(BaseMessage, type=MessageType.Move):
+    start_point: Point
+    end_point: Point
