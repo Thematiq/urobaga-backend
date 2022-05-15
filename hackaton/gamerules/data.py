@@ -48,6 +48,12 @@ class Map:
         return self.map[item.y][item.x]
 
 
+@dataclass
+class Move:
+    pos: Point
+    dir: Direction
+
+
 class Stroke:
     def __init__(self, start: Point, stop: Point):
         self.start = min(start, stop)
@@ -56,6 +62,13 @@ class Stroke:
             self.type = Direction.Horizontal
         else:
             self.type = Direction.Vertical
+
+    @classmethod
+    def from_move(cls, move: Move):
+        if move.dir is Direction.Horizontal:
+            return cls(move.pos, Point(move.pos.x + 1, move.pos.y))
+        else:
+            return cls(move.pos, Point(move.pos.x, move.pos.y))
 
 
 @dataclass
