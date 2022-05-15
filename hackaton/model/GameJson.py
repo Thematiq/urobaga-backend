@@ -27,7 +27,7 @@ class Point(BaseModel):
 class Move(BaseModel):
     start_point: Point
     end_point: Point
-    user: int
+    # user: int
 
 
 """
@@ -62,7 +62,7 @@ class Message(BaseModel):
     message: str
 
 
-# print(PlayersOrder.schema_json(indent=2))
+print(Move.schema_json(indent=2))
 
 
 """
