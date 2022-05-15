@@ -12,5 +12,7 @@ Instrukcja uruchomienia:
    - W głównym katalogu:
      - git submodule update
    - Wewnątrz katalogu web:
+   - Zmień w pliku .env.development zmienną SOCKET_URL, żeby wskazywała na adres, na którym odpalony jest backend.
+   - Wypisz w terminalu:
      - npm install
      - npm run dev
