@@ -14,4 +14,4 @@ class QuizQuestion(BaseModel):
     correct_answer: Optional[int]
 
     def __hash__(self):
-        return hash((self.id, self.question, self.difficulty))
+        return hash((self.id))
