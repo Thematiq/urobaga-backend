@@ -102,7 +102,7 @@ class Question(BaseModel):
 
 
 class Field(BaseModel):
-    point: List[Point]
+    point: Optional[List[Point]]
 
 
 class Message(BaseModel):
@@ -161,12 +161,12 @@ class QuizRequest(BaseMessage, type=MessageType.Quiz):
 
 
 class JsonMove(BaseMessage, type=MessageType.Move):
-    start_point: Point
-    end_point: Point
+    start_point: Optional[Point]
+    end_point: Optional[Point]
     user: Optional[int]
 
 
 class ReplyModel(BaseModel):
     move: Optional[JsonMove]  # Move is empty if there will be timeout
-    players_order: PlayersOrder
+    players_order: Optional[PlayersOrder]
     field: Optional[Field]

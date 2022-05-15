@@ -47,13 +47,13 @@ class StarHandler:
     def __get_nhbd(self, u: Point) -> List[Point]:
         nhbd = []
         if u.x > 0 and Direction.Vertical not in self.board[u]:
-            nhbd.append(Point(u.x - 1, u.y))
+            nhbd.append(Point(x=u.x - 1, y=u.y))
         if u.y > 0 and Direction.Horizontal not in self.board[u]:
-            nhbd.append(Point(u.x, u.y - 1))
+            nhbd.append(Point(x=u.x, y=u.y - 1))
         if u.x < self.board.w - 1 and Direction.Vertical not in self.board.map[u.y][u.x + 1]:
-            nhbd.append(Point(u.x + 1, u.y))
+            nhbd.append(Point(x=u.x + 1, y=u.y))
         if u.y < self.board.h - 1 and Direction.Horizontal not in self.board.map[u.y + 1][u.x]:
-            nhbd.append(Point(u.x, u.y + 1))
+            nhbd.append(Point(x=u.x, y=u.y + 1))
         return nhbd
 
 
@@ -61,9 +61,9 @@ def traverse_the_stars(board: Map, last_stroke: Stroke) -> Optional[List[Point]]
     left_point = last_stroke.start
     starfield = dict()
     if last_stroke.start.x == last_stroke.stop.x:
-        right_point = Point(left_point.x - 1, left_point.y)
+        right_point = Point(x=left_point.x - 1, y=left_point.y)
     else:
-        right_point = Point(left_point.x, left_point.y - 1)
+        right_point = Point(x=left_point.x, y=left_point.y - 1)
     left_star = StarHandler(Marker.Left, board, starfield, left_point, right_point)
     right_start = StarHandler(Marker.Right, board, starfield, right_point, left_point)
     current = left_star

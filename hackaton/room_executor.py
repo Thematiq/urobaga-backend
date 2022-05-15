@@ -83,7 +83,7 @@ class RoomExecutor:
         self.players.remove(self.host)
         for player in self.players:
             await player.websocket.send_json(Quit().dict())
-        if self.host.websocket is None:
+        if self.host.websocket is not  None:
             await self.host.websocket.close()
 
     async def send_player_list(self):

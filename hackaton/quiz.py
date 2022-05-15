@@ -14,7 +14,7 @@ def f(x):
 class Quiz:
     def __init__(self):
         self.data = dict()
-        with open('hackaton/quiz_questions/questions.csv') as csvfile:
+        with open('/home/piotrrzeznik/Programming/Studies/HackataonIO/Urodaga2/urobaga-backend/hackaton/quiz_questions/questions.csv') as csvfile:
             data = list(map(f, enumerate(csv.DictReader(csvfile))))
             self.difficulties = set()
             for row in data:
@@ -39,7 +39,7 @@ class GameQuiz:
         for difficulty in self.quiz.difficulties:
             self.available_questions[difficulty] = list(self.quiz.data[difficulty].keys())
 
-    def get_max_difficulty(self, points) -> QuizQuestion:
+    def get_max_difficulty(self, points) -> int:
         for difficulty in self.quiz.difficulties:
             if difficulty > points:
                 continue
