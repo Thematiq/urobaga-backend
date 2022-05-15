@@ -1,7 +1,7 @@
 import csv
 import random
 
-from model.quiz_question import QuizQuestion
+from .model.quiz_question import QuizQuestion
 from typing import List
 
 def f(x):
@@ -14,7 +14,7 @@ def f(x):
 class Quiz:
     def __init__(self):
         self.data = dict()
-        with open('quiz_questions/questions.csv') as csvfile:
+        with open('hackaton/quiz_questions/questions.csv') as csvfile:
             data = list(map(f, enumerate(csv.DictReader(csvfile))))
             self.difficulties = set()
             for row in data:
@@ -26,7 +26,6 @@ class Quiz:
             for row in data:
                 self.data[row.difficulty][row.id] = row
 
-            print(self.data)
 
 
     def get_question(self, difficulty, key):
@@ -59,8 +58,3 @@ class GameQuiz:
 
         return questions
 
-
-
-quiz = Quiz()
-
-print(GameQuiz(quiz).get_questions(13))

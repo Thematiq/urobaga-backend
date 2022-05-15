@@ -93,7 +93,7 @@ Server
 
 class PlayersOrder(BaseModel):
     order: List[int]
-    can_move: bool
+    current_player: int
 
 
 class Question(BaseModel):
