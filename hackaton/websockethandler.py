@@ -1,8 +1,12 @@
 from fastapi import APIRouter, WebSocket, Depends, status
 from typing import Optional, Dict
 
-from .dependencies import get_room_token, get_match
-from .mocks import MockMatchExecutor
+from starlette.websockets import WebSocketDisconnect
+
+from .dependencies import get_name_and_room_token, get_match
+from .model.token import Token
+from .room_executor import RoomExecutor
+import uuid
 
 router = APIRouter(prefix='/ws')
 
@@ -10,30 +14,47 @@ router = APIRouter(prefix='/ws')
 @router.websocket('/match')
 async def connect(
         websocket: WebSocket,
-        token: Optional[str] = Depends(get_room_token),
-        db: Dict[str, MockMatchExecutor] = Depends(get_match)):
-    if token is None:
-        await create_match(websocket, db)
-    elif token in db:
-        await join_match(websocket, db[token])
-    else:
-        await websocket.close(status.WS_1008_POLICY_VIOLATION)
+        name_token: Dict[str, Optional[str]] = Depends(get_name_and_room_token),
+        db: Dict[str, RoomExecutor] = Depends(get_match)):
+    await websocket.accept()
+    try:
+        if name_token is None:
+            await websocket.close(status.WS_1008_POLICY_VIOLATION)
+            return
+        name, token = name_token['name'], name_token['token']
+        if token is None:
+            await create_match(websocket, name, db)
+        elif token in db:
+            await join_match(websocket, name, db[token])
+        else:
+            await websocket.close(status.WS_1008_POLICY_VIOLATION)
+    except WebSocketDisconnect:
+        pass
 
 
 async def create_match(
         websocket: WebSocket,
-        db: Dict[str, MockMatchExecutor]):
+        name: str,
+        db: Dict[str, RoomExecutor]):
     print('create new match')
-    match = MockMatchExecutor()
-    db['randomString'] = match
-    game = await match.run(websocket)
+    match = RoomExecutor()
+    unique_token = uuid.uuid4().hex[:6].upper()
+    while db.get(unique_token):
+        unique_token = uuid.uuid4().hex[:6].upper()
+
+    db[unique_token] = match
+    await websocket.send_json(Token(token=unique_token).dict())
+    game = await match.run(websocket, name)
+    if game is None:
+        return
     await game.run()
 
 
 async def join_match(
         websocket: WebSocket,
-        match: MockMatchExecutor):
+        name: str,
+        match: RoomExecutor):
     print('joining existing match')
-    await match.add_new_player(websocket)
+    await match.add_new_player(websocket, name)
     game = await match.await_for_match()
     await game.await_for_end()
