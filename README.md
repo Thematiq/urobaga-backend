@@ -1,90 +1,6 @@
 
 # Urobaga
 
-
-Communication schema:
- - create room 
-   - request
-    ```json
-    {
-      "name": "..."
-    }
-    ```
-   - answer
-    ```json
-    {
-      "token": "..."
-    }
-    ```
- - join room 
-   - request
-    ```json
-    {
-      "name": "..."
-    }
-    ```
-   - answer (to all room members)
-    ```json
-    [
-      {
-          "name": "...",
-          "is_host": "..."
-      }
-   ]
-    ```
- - update rules
-     - request
-   ```json
-    {
-      "height": "...",
-      "width": "...",
-      "...": "..."
-    }
-   ```
- - answer (to all room members)
-    ```json
-    [
-      {
-      "height": "...",
-      "width": "...",
-      "...": "..."
-      }
-   ]
-    ```
-     
- - leave room
-     - request
-     ```json 
-     ```
-   - answer (to all room members)
-    ```json
-      [
-        {
-            "name": "...",
-            "is_host": "..."
-        }
-     ]
-    ```
-
- - start game
-     - request
-     ```json 
-     ```
-   - answer (to all room members)
-    ```json
-    {
-      "message": "start",
-      "timeout": "..." 
-    }
-    ```
-   - confirmation (from all members)
-   ```json
-    {
-      "name": "..." 
-    }
-    ```
-=======
-
 Instrukcja uruchomienia:
 
 1. Sklonuj repozytorium.
@@ -92,4 +8,9 @@ Instrukcja uruchomienia:
 3. Zainstaluj docker
 4. W katalogu głównym użyj `docker build .` i zaobserwuj nazwę obrazu
 5. Użyj nazwy obrazu przy `docker run -p 8000:8000 <nazwa_obrazu>`
- 
+6. Frontend uruchom przez:
+   W głównym katalogu:
+   git submodule update
+   Wewnątrz katalogu web:
+   npm install
+   npm run dev
