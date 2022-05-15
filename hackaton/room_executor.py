@@ -12,7 +12,7 @@ from .model.user import User
 
 
 class GameExecutor:
-    def __init__(self,players):
+    def __init__(self, players):
         self.players = players
 
     async def run(self):
@@ -20,6 +20,7 @@ class GameExecutor:
 
     async def await_for_end(self):
         print("Game awaiting for match")
+
 
 class RoomExecutor:
     def __init__(self):
@@ -30,10 +31,10 @@ class RoomExecutor:
         self.players_in_lobby = 0
         self.game = None
         self.rules = GameRules()
-        self.next_player_id = 0 # moze lepiej
+        self.next_player_id = 0  # moze lepiej
 
     async def run(self, websocket, name) -> Optional[GameExecutor]:
-        self.host = Player(self.next_player_id, name, websocket, True,  listening_task=None)
+        self.host = Player(self.next_player_id, name, websocket, True, listening_task=None)
         self.next_player_id += 1
         self.players_in_lobby += 1
         self.players.append(self.host)
@@ -66,10 +67,9 @@ class RoomExecutor:
         print("starting game")
         return await self.start_game()
 
-
     async def add_new_player(self, websocket, name):
         print(f"added new player {name}")
-        player = Player(self.next_player_id, name, websocket, False,  listening_task=None)
+        player = Player(self.next_player_id, name, websocket, False, listening_task=None)
         self.next_player_id += 1
         self.players_in_lobby += 1
         player.listening_task = asyncio.create_task(self.listen_websocket(player))
@@ -79,7 +79,8 @@ class RoomExecutor:
 
     async def send_player_list(self):
         for player in self.players:
-            await player.websocket.send_json(list(map(lambda x: User(id=x.id, name=x.name, is_host=x.is_host).dict(), self.players)))
+            await player.websocket.send_json(
+                list(map(lambda x: User(id=x.id, name=x.name, is_host=x.is_host).dict(), self.players)))
 
     async def listen_websocket(self, player: Player):
         while True:
@@ -104,7 +105,6 @@ class RoomExecutor:
         await self.send_player_list()
         self.players_in_lobby -= 1
 
-
     async def start_game(self) -> GameExecutor:
         print("waiting for user start messages")
         await self.everyone_ready.wait()
@@ -119,6 +119,3 @@ class RoomExecutor:
         """ let other websockets wait for match to be made """
         await self.task.wait()
         return self.game
-
-
-
