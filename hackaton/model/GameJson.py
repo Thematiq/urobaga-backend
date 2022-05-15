@@ -61,7 +61,7 @@ Client
 """
 
 
-class Point(BaseModel):
+class JsonPoint(BaseModel):
     x: int
     y: int
 
@@ -82,15 +82,7 @@ class Question(BaseModel):
 
 
 class Field(BaseModel):
-    point: List[Point]
-
-
-class ReplyModel:
-    move: Optional[Move]  # Move is empty if there will be timeout
-    players_order: PlayersOrder
-    field: Optional[Field]
-    questions: Optional[List[Question]]
-    no_move: bool
+    point: List[JsonPoint]
 
 
 class Message(BaseModel):
@@ -145,5 +137,11 @@ class QuizRequest(BaseMessage, type=MessageType.Quiz):
 
 
 class Move(BaseMessage, type=MessageType.Move):
-    start_point: Point
-    end_point: Point
+    start_point: JsonPoint
+    end_point: JsonPoint
+
+
+class ReplyModel(BaseModel):
+    move: Optional[Move]  # Move is empty if there will be timeout
+    players_order: PlayersOrder
+    field: Optional[Field]
