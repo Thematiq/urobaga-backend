@@ -23,7 +23,7 @@ class GameExecutor:
 
     async def send_initial_state(self):
         await asyncio.wait([
-            player.websocket.send_json(self.get_players_order())
+            player.websocket.send_json(self.get_players_order().dict())
             for player in self.players
         ])
         self.game_is_running = True
@@ -38,7 +38,7 @@ class GameExecutor:
                 try:
                     questions = self.handle_move(move)
                 except GameRuleException as e:
-                    self.send_error(e.cause)
+                    await self.send_error(e.cause)
                     continue
 
                 if questions:
@@ -50,7 +50,7 @@ class GameExecutor:
 
                 move.user = self.players_order.get_current_player_id()
                 self.players_order.next_player()
-                self.broadcast_move(move, field)
+                await self.broadcast_move(move, field)
             else:
                 # timeout
                 self.players_order.next_player()
@@ -138,7 +138,7 @@ class GameExecutor:
     def get_players_order(self):
         players_list = []
         for i, player in enumerate(self.players_order.get_players_order()):
-            players_list[i] = self.players_order.get_players_order()[player]
+            players_list.append(self.players_order.get_players_order()[player])
 
         player_order: PlayersOrder = PlayersOrder(
             order=players_list,
