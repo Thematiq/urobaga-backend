@@ -1,20 +1,16 @@
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from hackaton import websocket_router
+# This is a sample Python script.
+
+# Press Shift+F10 to execute it or replace it with your code.
+# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 
-app = FastAPI()
+def print_hi(name):
+    # Use a breakpoint in the code line below to debug your script.
+    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    print_hi('PyCharm')
 
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-
-
-# app.mount('/static', StaticFiles(directory='static'), name='static')
-app.include_router(websocket_router)
+# See PyCharm help at https://www.jetbrains.com/help/pycharm/

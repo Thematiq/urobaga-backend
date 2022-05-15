@@ -2,6 +2,7 @@ import csv
 import random
 
 from model.quiz_question import QuizQuestion
+from typing import List
 
 def f(x):
     i, row = x
@@ -39,8 +40,7 @@ class GameQuiz:
         for difficulty in self.quiz.difficulties:
             self.available_questions[difficulty] = list(self.quiz.data[difficulty].keys())
 
-
-    def get_max_difficulty(self, points):
+    def get_max_difficulty(self, points) -> QuizQuestion:
         for difficulty in self.quiz.difficulties:
             if difficulty > points:
                 continue
@@ -48,7 +48,7 @@ class GameQuiz:
                 continue
             return difficulty
 
-    def get_questions(self, points):
+    def get_questions(self, points) -> List[QuizQuestion]:
         questions = []
         while points !=0:
             difficulty = self.get_max_difficulty(points)

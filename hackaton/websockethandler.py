@@ -3,9 +3,10 @@ from typing import Optional, Dict
 
 from starlette.websockets import WebSocketDisconnect
 
-from .dependencies import get_name_and_room_token, get_match
+from .dependencies import get_name_and_room_token, get_match, get_quiz_game
 from .model.GameJson import Token
 from .room_executor import RoomExecutor
+from .quiz import GameQuiz
 import uuid
 
 router = APIRouter(prefix='/ws')
@@ -15,7 +16,8 @@ router = APIRouter(prefix='/ws')
 async def connect(
         websocket: WebSocket,
         name_token: Dict[str, Optional[str]] = Depends(get_name_and_room_token),
-        db: Dict[str, RoomExecutor] = Depends(get_match)):
+        db: Dict[str, RoomExecutor] = Depends(get_match),
+        quiz: GameQuiz = Depends(get_quiz_game)):
     await websocket.accept()
     print("connect websocket")
     if name_token is None:
@@ -23,7 +25,7 @@ async def connect(
         return
     name, token = name_token['name'], name_token['token']
     if token is None:
-        await create_match(websocket, name, db)
+        await create_match(websocket, name, db, quiz)
     elif token in db:
         await join_match(websocket, name, db[token])
     else:
@@ -34,7 +36,8 @@ async def connect(
 async def create_match(
         websocket: WebSocket,
         name: str,
-        db: Dict[str, RoomExecutor]):
+        db: Dict[str, RoomExecutor],
+        quiz: GameQuiz):
     print('create new match')
     try:
         match = RoomExecutor()

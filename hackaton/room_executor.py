@@ -1,32 +1,15 @@
 import asyncio
 from asyncio import Event
+from typing import List, Optional
 
-from .model.GameJson import Player, GameRules, Token, User, Message, MessageType, PlayerList, Start, Quit
-from fastapi import WebSocket
-from typing import Dict, List, Optional
-
-from .model.GameJson import User
-
-
-class GameExecutor:
-    def __init__(self, players):
-        self.players = players
-
-    async def run(self):
-        await self.send_to_players()
-        print("\n\n\nGame run")
-
-    async def await_for_end(self):
-        await self.send_to_players()
-        print("\nGame awaiting for match")
-
-    async def send_to_players(self):
-        for player in self.players:
-            await player.websocket.send_text("You are in game")
+from .model.GameExecutor import GameExecutor
+from .model.GameJson import Player, GameRules, MessageType, PlayerList, User, Quit, Start
+from .quiz import GameQuiz
 
 
 class RoomExecutor:
-    def __init__(self):
+    def __init__(self, quiz: GameQuiz):
+        self.quiz = quiz
         self.host = None
         self.players: List[Player] = []
         self.task = Event()
@@ -47,19 +30,19 @@ class RoomExecutor:
             print("host waiting for messages")
             json: dict = await self.host.websocket.receive_json()
             print(json.get("type"))
-            if json.get("type")==MessageType.Quit.value:
+            if json.get("type") == MessageType.Quit.value:
                 print("host quits")
                 for player in self.players:
                     await player.websocket.send_json(Quit().dict())
                 await self.host.websocket.close()
                 return None
-            elif json.get("type")==MessageType.Start.value:
+            elif json.get("type") == MessageType.Start.value:
                 print("host starting")
                 self.players_in_lobby -= 1
                 for player in self.players:
                     await player.websocket.send_json(Start().dict())
                 break
-            elif json.get('type')==MessageType.Rules.value:
+            elif json.get('type') == MessageType.Rules.value:
                 print("host rules")
                 try:
                     self.rules = GameRules.parse_obj(json)
@@ -73,7 +56,6 @@ class RoomExecutor:
 
         print("starting game")
         return await self.start_game()
-
 
     async def add_new_player(self, websocket, name):
         print(f"added new player {name}")
@@ -101,20 +83,20 @@ class RoomExecutor:
         if self.host.websocket is None:
             await self.host.websocket.close()
 
-
     async def send_player_list(self):
         for player in self.players:
             await player.websocket.send_json(
-                PlayerList(players=list(map(lambda x: User(id=x.id, name=x.name, is_host=x.is_host).dict(), self.players))).dict())
+                PlayerList(players=list(
+                    map(lambda x: User(id=x.id, name=x.name, is_host=x.is_host).dict(), self.players))).dict())
 
     async def listen_websocket(self, player: Player):
         while True:
             json: dict = await player.websocket.receive_json()
             if json.get("type"):
-                if json.get("type")==MessageType.Quit.value:
+                if json.get("type") == MessageType.Quit.value:
                     print(f"{player.name} quit")
                     await self.remove_player(player)
-                elif json.get("type")==MessageType.Start.value:
+                elif json.get("type") == MessageType.Start.value:
                     print(f"{player.name} is ready")
                     self.players_in_lobby -= 1
                     if self.players_in_lobby == 0:
@@ -137,7 +119,7 @@ class RoomExecutor:
         for player in self.players:
             if player.listening_task is not None:
                 player.listening_task.cancel()
-        self.game = GameExecutor(self.players)
+        self.game = GameExecutor(self.players, self.rules, self.quiz)
         self.task.set()
         return self.game
 

@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import Optional, List
 from enum import Enum, auto
 
+from ..model.GameJson import Point
+
 
 class Marker(Enum):
     Left = auto()
@@ -12,28 +14,6 @@ class Marker(Enum):
 class Direction(Enum):
     Horizontal = auto()
     Vertical = auto()
-
-
-@dataclass
-class Point:
-    x: int
-    y: int
-
-    def __hash__(self):
-        return hash((self.x, self.y))
-
-    def __eq__(self, other):
-        if not isinstance(other, Point):
-            return False
-        return self.x == other.x and self.y == other.y
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def __lt__(self, other):
-        if not isinstance(other, Point):
-            raise TypeError
-        return self.x < other.x or (self.x == other.x and self.y < other.y)
 
 
 class Map:
@@ -48,6 +28,12 @@ class Map:
         return self.map[item.y][item.x]
 
 
+@dataclass
+class Move:
+    pos: Point
+    dir: Direction
+
+
 class Stroke:
     def __init__(self, start: Point, stop: Point):
         self.start = min(start, stop)
@@ -56,6 +42,13 @@ class Stroke:
             self.type = Direction.Horizontal
         else:
             self.type = Direction.Vertical
+
+    @classmethod
+    def from_move(cls, move: Move):
+        if move.dir is Direction.Horizontal:
+            return cls(move.pos, Point(move.pos.x + 1, move.pos.y))
+        else:
+            return cls(move.pos, Point(move.pos.x, move.pos.y))
 
 
 @dataclass
