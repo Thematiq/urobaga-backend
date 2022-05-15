@@ -40,7 +40,7 @@ async def create_match(
         quiz: GameQuiz):
     print('create new match')
     try:
-        match = RoomExecutor()
+        match = RoomExecutor(quiz)
         unique_token = uuid.uuid4().hex[:6].upper()
         while db.get(unique_token):
             unique_token = uuid.uuid4().hex[:6].upper()

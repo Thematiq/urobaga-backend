@@ -20,9 +20,9 @@ class GameExecutor:
         self.game_is_running = False
         self.gameJudge = GameJudge((rules.width, rules.height))
 
-    def send_initial_state(self):
+    async def send_initial_state(self):
         await asyncio.wait([
-            player.websocket.send_json(self.get_players_order(player.id))
+            player.websocket.send_json(self.get_players_order())
             for player in self.players
         ])
         self.game_is_running = True
@@ -71,7 +71,7 @@ class GameExecutor:
             return self.quiz.get_questions(move_result_points)
         return None
 
-    def send_error(self, message):
+    async def send_error(self, message):
         error: Message = Message(message=message, type=MessageType.Error).dict()
         await self.players[self.players_order.get_current_player_id()].websocket.send_json(error)
 
@@ -119,25 +119,26 @@ class GameExecutor:
         except asyncio.TimeoutError:
             pass  # timeout
 
-    def broadcast_move(self, move, field: List[Point] = []):
+    async def broadcast_move(self, move, field: List[Point] = []):
         # Todo bez await
         await asyncio.wait([
             player.websocket.send_json(
                 ReplyModel(
                     move=move,
-                    player_order=self.get_players_order(player.id),
+                    player_order=self.get_players_order(),
                     field=field,
                 ).dict())
             for player in self.players
         ])
 
-    def get_players_order(self, player_id):
+    def get_players_order(self):
         players_list = []
         for i, player in enumerate(self.players_order.get_players_order()):
             players_list[i] = self.players_order.get_players_order()[player]
 
-        can_move = player_id == self.players_order.get_current_player_id()
-        player_order: PlayersOrder = PlayersOrder(order=players_list, can_move=can_move)
+        player_order: PlayersOrder = PlayersOrder(
+            order=players_list,
+            current_player=self.players_order.get_current_player_id())
         return player_order
 
 
