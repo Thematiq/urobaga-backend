@@ -1,16 +1,11 @@
 import asyncio
-
-from enum import Enum
-from pydantic import BaseModel
 from dataclasses import dataclass
-from fastapi import WebSocket
-from typing import Optional, List
-
-
-from pydantic import BaseModel
 from enum import Enum
-from typing import Dict, List
+from typing import List
+from typing import Optional
 
+from fastapi import WebSocket
+from pydantic import BaseModel
 
 
 class MessageType(Enum):
@@ -53,7 +48,8 @@ class BaseMessage(BaseModel):
             return cls(**data)
         return sub(**data)
 
-
+    class Config:
+        use_enum_values = True
 
 
 """
@@ -64,22 +60,30 @@ Client
 class Point(BaseModel):
     x: int
     y: int
-    
+
     def __hash__(self):
         return hash((self.x, self.y))
-    
+
     def __eq__(self, other):
         if not isinstance(other, Point):
             return False
         return self.x == other.x and self.y == other.y
-        
+
     def __ne__(self, other):
         return not (self == other)
-      
+
     def __lt__(self, other):
         if not isinstance(other, Point):
             raise TypeError
         return self.x < other.x or (self.x == other.x and self.y < other.y)
+
+
+class Quit(BaseMessage, type=MessageType.Quit):
+    type: MessageType = MessageType.Quit
+
+
+class Start(BaseMessage, type=MessageType.Start):
+    type: MessageType = MessageType.Start
 
 
 """
@@ -105,12 +109,14 @@ class Message(BaseModel):
     type: MessageType
     message: str
 
+
 """
 Room
 """
 
 
 class Token(BaseMessage, type=MessageType.Token):
+    type: MessageType = MessageType.Token
     token: str
 
 
@@ -121,6 +127,7 @@ class User(BaseModel):
 
 
 class PlayerList(BaseMessage, type=MessageType.Player_list):
+    type: MessageType = MessageType.Player_list
     players: List[User]
 
 
