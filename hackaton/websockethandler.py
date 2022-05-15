@@ -6,6 +6,7 @@ from starlette.websockets import WebSocketDisconnect
 from .dependencies import get_name_and_room_token, get_match
 from .model.token import Token
 from .room_executor import RoomExecutor
+import uuid
 
 router = APIRouter(prefix='/ws')
 
@@ -37,8 +38,12 @@ async def create_match(
         db: Dict[str, RoomExecutor]):
     print('create new match')
     match = RoomExecutor()
-    db['randomString'] = match
-    await websocket.send_json(Token(token='randomString').dict())
+    unique_token = uuid.uuid4().hex[:6].upper()
+    while db.get(unique_token):
+        unique_token = uuid.uuid4().hex[:6].upper()
+
+    db[unique_token] = match
+    await websocket.send_json(Token(token=unique_token).dict())
     game = await match.run(websocket, name)
     if game is None:
         return
