@@ -8,6 +8,7 @@ from typing import Optional, List
 
 
 class MessageType(Enum):
+    Start = "START"
     Error = "ERROR"
     Join = "JOIN"
     Quit = "QUIT"
@@ -93,8 +94,3 @@ class GameRules(BaseModel):
     width: int = 5
     move_timeout: float = 30.0
 
-
-#Todo exit
-class Starting(BaseModel):
-    name: str
-    starting: bool

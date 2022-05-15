@@ -4,7 +4,7 @@ from typing import Optional, Dict
 from starlette.websockets import WebSocketDisconnect
 
 from .dependencies import get_name_and_room_token, get_match
-from .model.token import Token
+from .model.GameJson import Token
 from .room_executor import RoomExecutor
 import uuid
 
