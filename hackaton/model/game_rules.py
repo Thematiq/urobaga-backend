@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class GameRules(BaseModel):
-    height: int
-    width: int
+    height: int = 10
+    width: int = 5
 
 

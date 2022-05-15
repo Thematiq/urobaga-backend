@@ -4,12 +4,9 @@ from pydantic import BaseModel
 
 
 class User(BaseModel):
-    id: Optional[int]
+    id: int
     name: str
-    is_host: Optional[bool]
+    is_host: bool
 
 
-
-
-print(User.schema())
 
