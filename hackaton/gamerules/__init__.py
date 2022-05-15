@@ -1,0 +1,1 @@
+from .gamejudge import GameJudge

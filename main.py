@@ -16,5 +16,5 @@ async def say_hello(name: str):
     return {"message": f"Hello {name}"}
 
 
-app.mount('/static', StaticFiles(directory='static'), name='static')
+# app.mount('/static', StaticFiles(directory='static'), name='static')
 app.include_router(websocket_router)
