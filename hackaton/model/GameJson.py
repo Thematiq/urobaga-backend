@@ -12,7 +12,6 @@ from enum import Enum
 from typing import Dict, List
 
 
-
 class MessageType(Enum):
     Token = "TOKEN"
     Rules = "RULES"
@@ -50,6 +49,9 @@ class BaseMessage(BaseModel):
         if sub is None:
             return cls(**data)
         return sub(**data)
+
+    class Config:
+        use_enum_values = True
 
 
 
@@ -108,20 +110,29 @@ class Message(BaseModel):
 """
 Room
 """
+class Quit(BaseMessage, type=MessageType.Quit):
+    type: MessageType = MessageType.Quit
+
+
+class Start(BaseMessage, type=MessageType.Start):
+    type: MessageType = MessageType.Start
 
 
 class Token(BaseMessage, type=MessageType.Token):
+    type: MessageType = MessageType.Token
     token: str
-
-
-class PlayerList(BaseMessage, type=MessageType.Player_list):
-    players: List[User]
-
 
 class User(BaseModel):
     id: int
     name: str
     is_host: bool
+
+
+class PlayerList(BaseMessage, type=MessageType.Player_list):
+    type: MessageType = MessageType.Player_list
+    players: List[User]
+
+
 
 
 @dataclass
@@ -134,6 +145,7 @@ class Player:
 
 
 class GameRules(BaseMessage, type=MessageType.Rules):
+    type: MessageType = MessageType.Rules
     height: int = 10
     width: int = 5
     move_timeout: float = 30.0
