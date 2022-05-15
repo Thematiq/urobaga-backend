@@ -26,13 +26,16 @@ class RoomExecutor:
         self.host = None
         self.players: List[Player] = []
         self.task = Event()
+        self.everyone_ready = Event()
+        self.players_in_lobby = 0
         self.game = None
         self.rules = GameRules()
         self.next_player_id = 0 # moze lepiej
 
     async def run(self, websocket, name) -> Optional[GameExecutor]:
-        self.host = Player(self.next_player_id, name, websocket, True, False, listening_task=None)
+        self.host = Player(self.next_player_id, name, websocket, True,  listening_task=None)
         self.next_player_id += 1
+        self.players_in_lobby += 1
         self.players.append(self.host)
         while True:
             json: dict = await self.host.websocket.receive_json()
@@ -44,11 +47,9 @@ class RoomExecutor:
                 return None
             elif json.get("starting"):
                 print("host starting")
-                self.host.ready_to_play = True
+                self.players_in_lobby -= 1
                 for player in self.players:
                     await player.websocket.send_json(Starting(name=player.name, starting=True).dict())
-                while not self.is_everyone_ready(): # do zmiany: jak sprawdzać czy wszyscy juz dołączyli? jak potem z tego włączyć grę?
-                    continue
                 break
             elif json.get('height'):
                 print("host rules")
@@ -65,18 +66,15 @@ class RoomExecutor:
         print("starting game")
         return await self.start_game()
 
-    def is_everyone_ready(self):
-        for player in self.players:
-            if not player.ready_to_play:
-                return False
-        return True
 
     async def add_new_player(self, websocket, name):
         print(f"added new player {name}")
-        player = Player(self.next_player_id, name, websocket, False, False, listening_task=None)
+        player = Player(self.next_player_id, name, websocket, False,  listening_task=None)
         self.next_player_id += 1
+        self.players_in_lobby += 1
         player.listening_task = asyncio.create_task(self.listen_websocket(player))
         self.players.append(player)
+        await player.websocket.send_json(self.rules.dict())
         await self.send_player_list()
 
     async def send_player_list(self):
@@ -91,19 +89,28 @@ class RoomExecutor:
                 await self.remove_player(player)
             elif json.get("starting"):
                 print(f"{player.name} is ready")
-                player.ready_to_play = True
+                self.players_in_lobby -= 1
+                if self.players_in_lobby == 0:
+                    self.everyone_ready.set()
             else:
                 pass
 
     async def remove_player(self, player):
         print("removed player")
         player.listening_task.cancel()
-        await player.websocket.close()
+        if player.websocket is not None:
+            await player.websocket.close()
         self.players.remove(player)
         await self.send_player_list()
+        self.players_in_lobby -= 1
 
 
     async def start_game(self) -> GameExecutor:
+        print("waiting for user start messages")
+        await self.everyone_ready.wait()
+        for player in self.players:
+            if player.listening_task is not None:
+                player.listening_task.cancel()
         self.game = GameExecutor(self.players)
         self.task.set()
         return self.game
