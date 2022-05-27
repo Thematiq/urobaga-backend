@@ -1,1 +1,1 @@
-web: cd web && npm install && cd .. && uvicorn main:app --host 0.0.0.0
+web: cd web && npm install && cd .. && uvicorn main:app --host 0.0.0.0 --port $PORT
