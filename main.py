@@ -5,6 +5,9 @@ from fastapi.responses import FileResponse
 from hackaton import websocket_router
 
 
+# Bruh
+
+
 app = FastAPI()
 
 @app.get("/", response_class=FileResponse)
