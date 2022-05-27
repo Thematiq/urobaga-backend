@@ -5,14 +5,16 @@ Instrukcja uruchomienia:
 
 1. Sklonuj repozytorium.
 2. Ustaw w pliku hackaton/quiz_questions/questions.csv swoje pytania.
-3. Zainstaluj docker
-4. W katalogu głównym użyj `docker build .` i zaobserwuj nazwę obrazu
-5. Użyj nazwy obrazu przy `docker run -p 8000:8000 <nazwa_obrazu>`
-6. Frontend uruchom przez:
-   - W głównym katalogu:
-     - git submodule update
-   - Wewnątrz katalogu web:
-   - Zmień w pliku .env.development zmienną SOCKET_URL, żeby wskazywała na adres, na którym odpalony jest backend.
-   - Wypisz w terminalu:
-     - npm install
-     - npm run dev
+3. W głównym katalogu:
+   - Wywołaj `git submodule init`
+   - Wywołaj `git submodule update`
+4. W katalogu web:
+   - Wywołaj `git fetch`
+   - Wywołaj `git switch dev`
+   - Zmień w pliku .env.development zmienną SOCKET_URL, żeby wskazywała na adres, na którym odpalony będzie backend.
+   - Wywołaj `npm install`
+   - Wywołaj `npm run build:dev`
+6. Zainstaluj docker
+7. W katalogu głównym użyj `docker build .` i zaobserwuj nazwę obrazu
+8. Użyj nazwy obrazu przy `docker run -p 8000:8000 <nazwa_obrazu>`
+
