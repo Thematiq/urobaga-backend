@@ -1,0 +1,24 @@
+{
+  "name": "urobaga-backend",
+  "version": "0.1.0",
+  "description": "Instrukcja uruchomienia:",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd web && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thematiq/urobaga-backend.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Thematiq/urobaga-backend/issues"
+  },
+  "homepage": "https://github.com/Thematiq/urobaga-backend#readme"
+}
