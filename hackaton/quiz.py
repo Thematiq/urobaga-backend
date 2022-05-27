@@ -1,8 +1,10 @@
 import csv
 import random
+from os import path
 
 from .model.quiz_question import QuizQuestion
 from typing import List
+
 
 def f(x):
     i, row = x
@@ -14,7 +16,7 @@ def f(x):
 class Quiz:
     def __init__(self):
         self.data = dict()
-        with open('hackaton/quiz_questions/questions.csv') as csvfile:
+        with open(path.join(path.dirname(__file__), 'quiz_questions/questions.csv')) as csvfile:
             data = list(map(f, enumerate(csv.DictReader(csvfile))))
             self.difficulties = set()
             for row in data:
@@ -39,7 +41,7 @@ class GameQuiz:
         for difficulty in self.quiz.difficulties:
             self.available_questions[difficulty] = list(self.quiz.data[difficulty].keys())
 
-    def get_max_difficulty(self, points) -> QuizQuestion:
+    def get_max_difficulty(self, points) -> int:
         for difficulty in self.quiz.difficulties:
             if difficulty > points:
                 continue

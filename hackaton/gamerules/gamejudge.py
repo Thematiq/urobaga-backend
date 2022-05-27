@@ -59,9 +59,9 @@ class GameJudge:
         own_taken = move.pos in self.owned_fields
         nhbd_taken = False
         if move.dir is Direction.Horizontal and move.pos.y > 0 and \
-                Point(move.pos.x, move.pos.y - 1) in self.owned_fields:
+                Point(x=move.pos.x, y=move.pos.y - 1) in self.owned_fields:
             nhbd_taken = True
-        elif move.pos.x > 0 and Point(move.pos.x - 1, move.pos.y) in self.owned_fields and own_taken:
+        elif move.pos.x > 0 and Point(x=move.pos.x - 1, y=move.pos.y) in self.owned_fields and own_taken:
             nhbd_taken = True
         if own_taken and nhbd_taken:
             raise GameRuleException(ErrorEnum.EDGE_INSIDE_AREA)

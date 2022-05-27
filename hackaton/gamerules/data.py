@@ -46,9 +46,9 @@ class Stroke:
     @classmethod
     def from_move(cls, move: Move):
         if move.dir is Direction.Horizontal:
-            return cls(move.pos, Point(move.pos.x + 1, move.pos.y))
+            return cls(move.pos, Point(x=move.pos.x + 1, y=move.pos.y))
         else:
-            return cls(move.pos, Point(move.pos.x, move.pos.y))
+            return cls(move.pos, Point(x=move.pos.x, y=move.pos.y))
 
 
 @dataclass
