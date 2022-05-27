@@ -124,12 +124,12 @@ class GameExecutor:
             pass  # timeout
 
     async def broadcast_move(self, move, field: List[Point] = []):
-        # Todo bez await
+        # TODO without await
         print("move")
         await asyncio.wait([
             player.websocket.send_json(
                 ReplyModel(
-                    move=move.dict(),
+                    move=move.dict() if move is not None else None,
                     player_order=self.get_players_order(),
                     field=field,
                 ).dict())

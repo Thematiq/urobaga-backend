@@ -1,8 +1,10 @@
 import csv
 import random
+from os import path
 
 from .model.quiz_question import QuizQuestion
 from typing import List
+
 
 def f(x):
     i, row = x
@@ -14,7 +16,7 @@ def f(x):
 class Quiz:
     def __init__(self):
         self.data = dict()
-        with open('/home/piotrrzeznik/Programming/Studies/HackataonIO/Urodaga2/urobaga-backend/hackaton/quiz_questions/questions.csv') as csvfile:
+        with open(path.join(path.dirname(__file__), 'quiz_questions/questions.csv')) as csvfile:
             data = list(map(f, enumerate(csv.DictReader(csvfile))))
             self.difficulties = set()
             for row in data:
